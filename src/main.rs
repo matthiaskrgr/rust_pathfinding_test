@@ -6,8 +6,13 @@ struct Edge {
     id: u8, 
     entry: u8,
     exit: u8,
+    weight: u32,
 }
 
+struct Path {
+    edges: Vec<Edge>,
+    weight: u32,
+}
 
 /*                 Printing                                      */
 fn get_egdge_str(egdge: &Edge) -> String  {
@@ -253,25 +258,25 @@ fn test_matthiaskrgr() {
     // Testing
 
     // path egdges
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 5};
-    let egdge_2 = Edge {id: 2, entry: 5, exit: 10};
-    let egdge_3 = Edge {id: 3, entry: 5, exit: 7};
-    let egdge_4 = Edge {id: 4, entry: 7, exit: 10};
-    let egdge_5 = Edge {id: 5, entry: 6, exit: 10}; // unreachable
-    let egdge_6 = Edge {id: 6, entry: 7, exit: 11}; // dead end after 7 is pruned
-    let egdge_7 = Edge {id: 7, entry: 11, exit: 20}; // dead end chain
-    let egdge_8 = Edge {id: 8, entry: 20, exit: 25};
-    let egdge_9 = Edge {id: 9, entry: 25, exit: 26};
-    let egdge_10 = Edge {id: 10, entry: 26, exit: 27};
-    let egdge_11 = Edge {id: 11, entry: 50, exit: 10}; // unreachable chain
-    let egdge_12 = Edge {id: 12, entry: 49, exit: 50};
-    let egdge_13 = Edge {id: 13, entry: 48, exit: 59};
-    let egdge_14 = Edge {id: 14, entry: 0, exit: 100}; // 0 -> 100
-    let egdge_15 = Edge {id: 15, entry: 100, exit: 10}; // 100 -> 10 // goal
-    let egdge_16 = Edge {id: 16, entry: 5, exit: 9}; 
-    let egdge_17 = Edge {id: 17, entry: 9, exit: 200}; 
-    let egdge_18 = Edge {id: 18, entry: 200, exit: 10};
-    let egdge_19 = Edge {id: 19, entry: 7, exit: 5}; // 7 -> 7, 5 -> 7 circular loop
+    let egdge_1 = Edge {id: 1, entry: 0, exit: 5, weight: 1};
+    let egdge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
+    let egdge_3 = Edge {id: 3, entry: 5, exit: 7, weight: 1};
+    let egdge_4 = Edge {id: 4, entry: 7, exit: 10, weight: 1};
+    let egdge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1}; // unreachable
+    let egdge_6 = Edge {id: 6, entry: 7, exit: 11, weight: 1}; // dead end after 7 is pruned
+    let egdge_7 = Edge {id: 7, entry: 11, exit: 20, weight: 1}; // dead end chain
+    let egdge_8 = Edge {id: 8, entry: 20, exit: 25, weight: 1};
+    let egdge_9 = Edge {id: 9, entry: 25, exit: 26, weight: 1};
+    let egdge_10 = Edge {id: 10, entry: 26, exit: 27, weight: 1};
+    let egdge_11 = Edge {id: 11, entry: 50, exit: 10, weight: 1}; // unreachable chain
+    let egdge_12 = Edge {id: 12, entry: 49, exit: 50, weight: 1};
+    let egdge_13 = Edge {id: 13, entry: 48, exit: 59, weight: 1};
+    let egdge_14 = Edge {id: 14, entry: 0, exit: 100, weight: 1}; // 0 -> 100
+    let egdge_15 = Edge {id: 15, entry: 100, exit: 10, weight: 1}; // 100 -> 10 // goal
+    let egdge_16 = Edge {id: 16, entry: 5, exit: 9, weight: 1}; 
+    let egdge_17 = Edge {id: 17, entry: 9, exit: 200, weight: 1}; 
+    let egdge_18 = Edge {id: 18, entry: 200, exit: 10, weight: 1};
+    let egdge_19 = Edge {id: 19, entry: 7, exit: 5, weight: 1}; // 7 -> 7, 5 -> 7 circular loop
 
 
     // move egdges into vector
@@ -304,10 +309,10 @@ fn test_matthiaskrgr() {
 // egdges of prolog functions derived from prolog tasks by Wiebke Petersen (Uni Düsseldorf)
 fn test_prolog1() {
     println!("prolog 1");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 5};
-    let egdge_2 = Edge {id: 2, entry: 5, exit: 10};
-    let egdge_3 = Edge {id: 3, entry: 5, exit: 7};
-    let egdge_4 = Edge {id: 4, entry: 7, exit: 10};
+    let egdge_1 = Edge {id: 1, entry: 0, exit: 5, weight: 1};
+    let egdge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
+    let egdge_3 = Edge {id: 3, entry: 5, exit: 7, weight: 1};
+    let egdge_4 = Edge {id: 4, entry: 7, exit: 10, weight: 1};
     let start_floor: u8 = 0;
     let end_floor: u8 = 10;
     let mut egdgevec = Vec::new();
@@ -321,10 +326,10 @@ fn test_prolog1() {
 
 fn test_prolog2() {
     println!("prolog 2");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 5};
-    let egdge_2 = Edge {id: 2, entry: 5, exit: 10};
-    let egdge_3 = Edge {id: 3, entry: 5, exit: 8};
-    let egdge_4 = Edge {id: 4, entry: 8, exit: 10};
+    let egdge_1 = Edge {id: 1, entry: 0, exit: 5, weight: 1};
+    let egdge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
+    let egdge_3 = Edge {id: 3, entry: 5, exit: 8, weight: 1};
+    let egdge_4 = Edge {id: 4, entry: 8, exit: 10, weight: 1};
     let start_floor: u8 = 0;
     let end_floor: u8 = 10;
     let mut egdgevec = Vec::new();
@@ -337,16 +342,16 @@ fn test_prolog2() {
 
 fn test_prolog3() {
     println!("prolog 3");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 6};
-    let egdge_2 = Edge {id: 2, entry: 6, exit: 19};
-    let egdge_3 = Edge {id: 3, entry: 3, exit: 6};
-    let egdge_4 = Edge {id: 4, entry: 3, exit: 9};
-    let egdge_5 = Edge {id: 5, entry: 9, exit: 19};
-    let egdge_6 = Edge {id: 6, entry: 3, exit: 13};
-    let egdge_7 = Edge {id: 7, entry: 13, exit: 17};
-    let egdge_8 = Edge {id: 8, entry: 17, exit: 19};
-    let egdge_9 = Edge {id: 9, entry: 9, exit: 17};
-    let egdge_10 = Edge {id: 10, entry: 6, exit: 17};
+    let egdge_1 = Edge {id: 1, entry: 0, exit: 6, weight: 1};
+    let egdge_2 = Edge {id: 2, entry: 6, exit: 19, weight: 1};
+    let egdge_3 = Edge {id: 3, entry: 3, exit: 6, weight: 1};
+    let egdge_4 = Edge {id: 4, entry: 3, exit: 9, weight: 1};
+    let egdge_5 = Edge {id: 5, entry: 9, exit: 19, weight: 1};
+    let egdge_6 = Edge {id: 6, entry: 3, exit: 13, weight: 1};
+    let egdge_7 = Edge {id: 7, entry: 13, exit: 17, weight: 1};
+    let egdge_8 = Edge {id: 8, entry: 17, exit: 19, weight: 1};
+    let egdge_9 = Edge {id: 9, entry: 9, exit: 17, weight: 1};
+    let egdge_10 = Edge {id: 10, entry: 6, exit: 17, weight: 1};
     let start_floor: u8 = 0;
     let end_floor: u8 = 19;
     let mut egdgevec = Vec::new();
@@ -366,11 +371,11 @@ fn test_prolog3() {
 
 fn test_prolog4() {
     println!("prolog 4");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 6};
-    let egdge_2 = Edge {id: 2, entry: 2, exit: 6};
-    let egdge_3 = Edge {id: 3, entry: 6, exit: 8};
-    let egdge_4 = Edge {id: 4, entry: 8, exit: 10};
-    let egdge_5 = Edge {id: 5, entry: 6, exit: 10};
+    let egdge_1 = Edge {id: 1, entry: 0, exit: 6, weight: 1};
+    let egdge_2 = Edge {id: 2, entry: 2, exit: 6, weight: 1};
+    let egdge_3 = Edge {id: 3, entry: 6, exit: 8, weight: 1};
+    let egdge_4 = Edge {id: 4, entry: 8, exit: 10, weight: 1};
+    let egdge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 10;
@@ -385,11 +390,11 @@ fn test_prolog4() {
 
 fn test_prolog5() {
     println!("prolog 5");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 3};
-    let egdge_2 = Edge {id: 2, entry: 2, exit: 6};
-    let egdge_3 = Edge {id: 3, entry: 0, exit: 2};
-    let egdge_4 = Edge {id: 4, entry: 3, exit: 10};
-    let egdge_5 = Edge {id: 5, entry: 6, exit: 10};
+    let egdge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
+    let egdge_2 = Edge {id: 2, entry: 2, exit: 6, weight: 1};
+    let egdge_3 = Edge {id: 3, entry: 0, exit: 2, weight: 1};
+    let egdge_4 = Edge {id: 4, entry: 3, exit: 10, weight: 1};
+    let egdge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 10;
@@ -405,11 +410,11 @@ fn test_prolog5() {
 
 fn test_prolog6() {
     println!("prolog 6");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 3};
-    let egdge_2 = Edge {id: 2, entry: 5, exit: 10};
-    let egdge_3 = Edge {id: 3, entry: 3, exit: 8};
-    let egdge_4 = Edge {id: 4, entry: 8, exit: 12};
-    let egdge_5 = Edge {id: 5, entry: 8, exit: 12};
+    let egdge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
+    let egdge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
+    let egdge_3 = Edge {id: 3, entry: 3, exit: 8, weight: 1};
+    let egdge_4 = Edge {id: 4, entry: 8, exit: 12, weight: 1};
+    let egdge_5 = Edge {id: 5, entry: 8, exit: 12, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 12;
@@ -424,12 +429,12 @@ fn test_prolog6() {
 
 fn test_prolog7() {
     println!("prolog 7");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 6};
-    let egdge_2 = Edge {id: 2, entry: 0, exit: 8};
-    let egdge_3 = Edge {id: 3, entry: 3, exit: 8};
-    let egdge_4 = Edge {id: 4, entry: 1, exit: 3};
-    let egdge_5 = Edge {id: 5, entry: 6, exit: 15};
-    let egdge_6 = Edge {id: 6, entry: 8, exit: 15};
+    let egdge_1 = Edge {id: 1, entry: 0, exit: 6, weight: 1};
+    let egdge_2 = Edge {id: 2, entry: 0, exit: 8, weight: 1};
+    let egdge_3 = Edge {id: 3, entry: 3, exit: 8, weight: 1};
+    let egdge_4 = Edge {id: 4, entry: 1, exit: 3, weight: 1};
+    let egdge_5 = Edge {id: 5, entry: 6, exit: 15, weight: 1};
+    let egdge_6 = Edge {id: 6, entry: 8, exit: 15, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 15;
@@ -445,11 +450,11 @@ fn test_prolog7() {
 
 fn test_prolog8() {
     println!("prolog 8");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 3};
-    let egdge_2 = Edge {id: 2, entry: 7, exit: 10};
-    let egdge_3 = Edge {id: 3, entry: 3, exit: 7};
-    let egdge_4 = Edge {id: 4, entry: 3, exit: 10};
-    let egdge_5 = Edge {id: 5, entry: 10, exit: 15};
+    let egdge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
+    let egdge_2 = Edge {id: 2, entry: 7, exit: 10, weight: 1};
+    let egdge_3 = Edge {id: 3, entry: 3, exit: 7, weight: 1};
+    let egdge_4 = Edge {id: 4, entry: 3, exit: 10, weight: 1};
+    let egdge_5 = Edge {id: 5, entry: 10, exit: 15, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 15;
