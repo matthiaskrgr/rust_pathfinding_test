@@ -1,94 +1,94 @@
 #[derive(Clone)] // give clone trait to this struct
 struct Edge {
-    // id: unique egdge identifier
-    // entry: entry point of the egdge
-    // exit: exit point of the egdge
+    // id: unique edge identifier
+    // entry: entry point of the edge
+    // exit: exit point of the edge
     id: u8, 
     entry: u8,
     exit: u8,
     weight: u32,
 }
 
-struct Path {
+struct Path { // path that holds several edges
     edges: Vec<Edge>,
     weight: u32,
 }
 
 /*                 Printing                                      */
-fn get_egdge_str(egdge: &Edge) -> String  {
-    // take egdge reference and return info as string for usage in print()
-    return format!("egdge {}:  ({} -> {})", egdge.id, egdge.entry, egdge.exit);
+fn get_edge_str(edge: &Edge) -> String  {
+    // take edge reference and return info as string for usage in print()
+    return format!("edge {}:  ({} -> {})", edge.id, edge.entry, edge.exit);
 }
 
-fn print_egdge(egdge: &Edge) {
-    // print egdge info to stdout
-    return println!("{}", get_egdge_str(&egdge));
+fn print_edge(edge: &Edge) {
+    // print edge info to stdout
+    return println!("{}", get_edge_str(&edge));
 }
 
-fn print_egdge_vector(egdge_vector: &Vec<Edge>) {
-    // print all egdge info of vector
-    for egdge in egdge_vector {
-        print_egdge(&egdge);
+fn print_edge_vector(edge_vector: &Vec<Edge>) {
+    // print all edge info of vector
+    for edge in edge_vector {
+        print_edge(&edge);
     }
 }
 
-fn verify_egdges(egdges: &Vec<Edge>)
+fn verify_edges(edges: &Vec<Edge>)
 {
-    let mut egdge_ids = Vec::new();
-    for egdge in egdges {
-        let id = egdge.id;
-        if egdge_ids.contains(&id) {
-            println!("ERROR: 2 egdges with identical ID found: {}", id);
+    let mut edge_ids = Vec::new();
+    for edge in edges {
+        let id = edge.id;
+        if edge_ids.contains(&id) {
+            println!("ERROR: 2 edges with identical ID found: {}", id);
             std::process::exit(2);
         } else {
-            egdge_ids.push(id);
+            edge_ids.push(id);
         }
     }
 }
 
-fn prune_egdges(available_egdges: &Vec<Edge>, start_floor: u8, end_floor: u8) -> Vec<Edge> {
-    // prune egdges that are unreachable or dead ends
+fn prune_edges(available_edges: &Vec<Edge>, start_floor: u8, end_floor: u8) -> Vec<Edge> {
+    // prune edges that are unreachable or dead ends
     // fn does only as single pass!
     let mut exits = Vec::new();
     let mut entries = Vec::new();
 
-    // make sure we don't have several egdges with same id
-    verify_egdges(&available_egdges);
+    // make sure we don't have several edges with same id
+    verify_edges(&available_edges);
 
-    for egdge in available_egdges { // collect entries and exits
-        if !exits.contains(&egdge.exit) {
-            exits.push(egdge.exit);
+    for edge in available_edges { // collect entries and exits
+        if !exits.contains(&edge.exit) {
+            exits.push(edge.exit);
         }
-        if !entries.contains(&egdge.entry) {
-            entries.push(egdge.entry);
-        }
-    }
-
-    let mut usable_egdges = Vec::new();
-
-    for egdge in available_egdges {
-        // make sure we don't remove our root and goal egdge
-        if !entries.contains(&((egdge).exit)) && (egdge).exit != end_floor  { // remove deadends
-            println!("pruning dead end:    {}", get_egdge_str(&egdge));
-        } else if !exits.contains(&((egdge).entry)) && (egdge).entry != start_floor { // remove unreachable
-            println!("pruning unreachable: {}", get_egdge_str(&egdge));
-        } else { // egdge is neither dead end nor unreachable and thus usable
-            usable_egdges.push(egdge.clone());
+        if !entries.contains(&edge.entry) {
+            entries.push(edge.entry);
         }
     }
-    return usable_egdges;
+
+    let mut usable_edges = Vec::new();
+
+    for edge in available_edges {
+        // make sure we don't remove our root and goal edge
+        if !entries.contains(&((edge).exit)) && (edge).exit != end_floor  { // remove deadends
+            println!("pruning dead end:    {}", get_edge_str(&edge));
+        } else if !exits.contains(&((edge).entry)) && (edge).entry != start_floor { // remove unreachable
+            println!("pruning unreachable: {}", get_edge_str(&edge));
+        } else { // edge is neither dead end nor unreachable and thus usable
+            usable_edges.push(edge.clone());
+        }
+    }
+    return usable_edges;
 }
 
 
-fn prune_egdges_recursively(egdges: Vec<Edge>, start_floor: u8, end_floor: u8) -> Vec<Edge> {
-    // prune egdges recursively until we cannot prune any further
+fn prune_edges_recursively(edges: Vec<Edge>, start_floor: u8, end_floor: u8) -> Vec<Edge> {
+    // prune edges recursively until we cannot prune any further
     println!("\n ===  pruning  ===");
     let mut a;
     let mut b;
-    let mut c = egdges;
+    let mut c = edges;
     loop { // prune until failure
-        a  = prune_egdges(&c, start_floor, end_floor);
-        b  = prune_egdges(&a, start_floor, end_floor);
+        a  = prune_edges(&c, start_floor, end_floor);
+        b  = prune_edges(&a, start_floor, end_floor);
         if a.len() == b.len() { // before == after
             c = b;
             break;
@@ -100,43 +100,43 @@ fn prune_egdges_recursively(egdges: Vec<Edge>, start_floor: u8, end_floor: u8) -
     return c;
 }
 
-fn get_possible_new_connections(egdge: &Edge, purged_egdges: &Vec<Edge>) -> Vec<Edge> {
+fn get_possible_new_connections(edge: &Edge, purged_edges: &Vec<Edge>) -> Vec<Edge> {
     let mut connection_vec = Vec::new();
-    for poss_conn in purged_egdges {
-        if egdge.exit == (&poss_conn).entry { // collect possible new connections
+    for poss_conn in purged_edges {
+        if edge.exit == (&poss_conn).entry { // collect possible new connections
             connection_vec.push(poss_conn.clone()); 
         }
     }
-    //println!("possible new connections for {}", get_egdge_str(&egdge));
-    //print_egdge_vector(&connection_vec);
+    //println!("possible new connections for {}", get_edge_str(&edge));
+    //print_edge_vector(&connection_vec);
     //println!("\n");
     return connection_vec;
 }
 
 
-fn print_shortest_paths(start_floor: u8, end_floor: u8, egdgevec: Vec<Edge>) {
+fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     // meh...
     #[allow(non_snake_case)]
     let  START_FLOOR = start_floor;
     #[allow(non_snake_case)]
     let  END_FLOOR = end_floor; 
 
-    let egdges = egdgevec; // immutable now
-    println!("Current egdges: ");
-        print_egdge_vector(&egdges); 
+    let edges = edgevec; // immutable now
+    println!("Current edges: ");
+        print_edge_vector(&edges); 
 
     // prune
-    let purged_egdges = prune_egdges_recursively(egdges, START_FLOOR, END_FLOOR);
+    let purged_edges = prune_edges_recursively(edges, START_FLOOR, END_FLOOR);
 
-    if purged_egdges.len() == 0 {
-        println!("No egdges left to traverse!");
+    if purged_edges.len() == 0 {
+        println!("No edges left to traverse!");
         std::process::exit(1);
     }
 
-    println!("\nRemaining egdges:");
-        print_egdge_vector(&purged_egdges); // obtain paths
+    println!("\nRemaining edges:");
+        print_edge_vector(&purged_edges); // obtain paths
 
-    let mut walked_egdges = Vec::new(); // store numbers/ids of walked egdges in this vector, 
+    let mut walked_edges = Vec::new(); // store numbers/ids of walked edges in this vector, 
 
     let mut vector_of_paths = Vec::new(); // store paths in this vector, this will be a vector of vectors
 
@@ -144,10 +144,10 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, egdgevec: Vec<Edge>) {
     println!("\nSearching for paths...");
     // find entry paths
     let mut initial_entries = Vec::new();
-    for egdge in &purged_egdges {
-        if egdge.entry == START_FLOOR { // possible starting points
-            println!("We can start at {}", get_egdge_str(&egdge));
-            initial_entries.push(egdge);
+    for edge in &purged_edges {
+        if edge.entry == START_FLOOR { // possible starting points
+            println!("We can start at {}", get_edge_str(&edge));
+            initial_entries.push(edge);
         }
     }
     let initial_entries = initial_entries; // make immutable
@@ -155,41 +155,41 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, egdgevec: Vec<Edge>) {
 
     // [vec1]  [vec2]  [vec3] ... ] => vector_of_paths
     //   ↓        ↓       ↓
-    //  egdge1   egdge1   egdge2
+    //  edge1   edge1   edge2
     //   ↓        ↓       ↓
-    //  egdge5   egdge18  egdge4 
+    //  edge5   edge18  edge4 
     //   ...      ...
-    for start_egdge in initial_entries {
+    for start_edge in initial_entries {
         let mut path_vect = Vec::new();
-        path_vect.push((start_egdge).clone()); // start a new path_vector
-        walked_egdges.push(start_egdge.id); // mark egdge as traversed
+        path_vect.push((start_edge).clone()); // start a new path_vector
+        walked_edges.push(start_edge.id); // mark edge as traversed
         vector_of_paths.push(path_vect.clone()); // save new path vector to VoP
     }
     'iterative_pathfinding_loop: loop {
 
-        let mut vector_of_paths_tmp: Vec<Vec<Edge>> = Vec::new(); // vector containing vectors containing egdges
+        let mut vector_of_paths_tmp: Vec<Vec<Edge>> = Vec::new(); // vector containing vectors containing edges
         for subpath in &vector_of_paths {
-            // collect ids of egdges in this subpath
-            let mut subpath_egdge_ids = Vec::new();
-            for egdge in subpath {
-                subpath_egdge_ids.push(egdge.id);
+            // collect ids of edges in this subpath
+            let mut subpath_edge_ids = Vec::new();
+            for edge in subpath {
+                subpath_edge_ids.push(edge.id);
             }
-            let last_egdge_of_subpath = subpath.last().unwrap(); // get last egdge of the subpath
+            let last_edge_of_subpath = subpath.last().unwrap(); // get last edge of the subpath
 
             // and find new connections
-            let new_conns = get_possible_new_connections(&last_egdge_of_subpath, &purged_egdges);
+            let new_conns = get_possible_new_connections(&last_edge_of_subpath, &purged_edges);
             //println!("found new connections: {}", new_conns.len());
 
             if new_conns.len() > 0 { // we have new connections
                 for new_connection in new_conns.iter() {
-                    if subpath_egdge_ids.contains(&(new_connection.id)) { // avoid hang in circular paths (path( 5 -> 10) ; path(10 -> 5)
+                    if subpath_edge_ids.contains(&(new_connection.id)) { // avoid hang in circular paths (path( 5 -> 10) ; path(10 -> 5)
                         continue;
                     }
-                    //println!("possible new connection: {}", get_egdge_str(&new_connection));
+                    //println!("possible new connection: {}", get_edge_str(&new_connection));
                     let mut subpath_tmp = subpath.clone(); // clone current subpath
-                    subpath_tmp.push(new_connection.clone()); // and append egdge
+                    subpath_tmp.push(new_connection.clone()); // and append edge
                     vector_of_paths_tmp.push(subpath_tmp.clone()); // add the new subpath to the new vector
-                    walked_egdges.push(new_connection.id); // save egdge nr as walked
+                    walked_edges.push(new_connection.id); // save edge nr as walked
 
                 }
             } else { // we have no new connections, clone subpath anyway so it doesnt get dropped
@@ -201,7 +201,7 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, egdgevec: Vec<Edge>) {
 
         let mut break_loop = true;
         for subvector in &vector_of_paths {
-            if subvector.last().unwrap().exit != END_FLOOR { // if we have one subpath end egdge that has not reached end yet
+            if subvector.last().unwrap().exit != END_FLOOR { // if we have one subpath end edge that has not reached end yet
                 break_loop = false;                          // we must continue searching
             }
         } 
@@ -214,8 +214,8 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, egdgevec: Vec<Edge>) {
 
 
     // debugging:
-    print!("Walked egdges:");
-    for nr in &walked_egdges {
+    print!("Walked edges:");
+    for nr in &walked_edges {
         print!(" {}", nr);
     }
     println!();
@@ -225,8 +225,8 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, egdgevec: Vec<Edge>) {
     for subpath in &vector_of_paths {
         it +=1;
         println!("\tsubpath {}", it);
-        for egdge in subpath  {
-            println!("\t\t{}", get_egdge_str(&egdge));
+        for edge in subpath  {
+            println!("\t\t{}", get_edge_str(&edge));
         }
     }
     println!("\nshortest path(s) from {} to {}:", START_FLOOR, END_FLOOR);
@@ -243,8 +243,8 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, egdgevec: Vec<Edge>) {
         index += 1;
     }
     for subpath in shortes_paths {
-        for egdge in subpath {
-            println!("{}", get_egdge_str(&egdge));
+        for edge in subpath {
+            println!("{}", get_edge_str(&edge));
         }
         println!("====");
     }
@@ -257,214 +257,214 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, egdgevec: Vec<Edge>) {
 fn test_matthiaskrgr() {
     // Testing
 
-    // path egdges
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 5, weight: 1};
-    let egdge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
-    let egdge_3 = Edge {id: 3, entry: 5, exit: 7, weight: 1};
-    let egdge_4 = Edge {id: 4, entry: 7, exit: 10, weight: 1};
-    let egdge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1}; // unreachable
-    let egdge_6 = Edge {id: 6, entry: 7, exit: 11, weight: 1}; // dead end after 7 is pruned
-    let egdge_7 = Edge {id: 7, entry: 11, exit: 20, weight: 1}; // dead end chain
-    let egdge_8 = Edge {id: 8, entry: 20, exit: 25, weight: 1};
-    let egdge_9 = Edge {id: 9, entry: 25, exit: 26, weight: 1};
-    let egdge_10 = Edge {id: 10, entry: 26, exit: 27, weight: 1};
-    let egdge_11 = Edge {id: 11, entry: 50, exit: 10, weight: 1}; // unreachable chain
-    let egdge_12 = Edge {id: 12, entry: 49, exit: 50, weight: 1};
-    let egdge_13 = Edge {id: 13, entry: 48, exit: 59, weight: 1};
-    let egdge_14 = Edge {id: 14, entry: 0, exit: 100, weight: 1}; // 0 -> 100
-    let egdge_15 = Edge {id: 15, entry: 100, exit: 10, weight: 1}; // 100 -> 10 // goal
-    let egdge_16 = Edge {id: 16, entry: 5, exit: 9, weight: 1}; 
-    let egdge_17 = Edge {id: 17, entry: 9, exit: 200, weight: 1}; 
-    let egdge_18 = Edge {id: 18, entry: 200, exit: 10, weight: 1};
-    let egdge_19 = Edge {id: 19, entry: 7, exit: 5, weight: 1}; // 7 -> 7, 5 -> 7 circular loop
+    // path edges
+    let edge_1 = Edge {id: 1, entry: 0, exit: 5, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
+    let edge_3 = Edge {id: 3, entry: 5, exit: 7, weight: 1};
+    let edge_4 = Edge {id: 4, entry: 7, exit: 10, weight: 1};
+    let edge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1}; // unreachable
+    let edge_6 = Edge {id: 6, entry: 7, exit: 11, weight: 1}; // dead end after 7 is pruned
+    let edge_7 = Edge {id: 7, entry: 11, exit: 20, weight: 1}; // dead end chain
+    let edge_8 = Edge {id: 8, entry: 20, exit: 25, weight: 1};
+    let edge_9 = Edge {id: 9, entry: 25, exit: 26, weight: 1};
+    let edge_10 = Edge {id: 10, entry: 26, exit: 27, weight: 1};
+    let edge_11 = Edge {id: 11, entry: 50, exit: 10, weight: 1}; // unreachable chain
+    let edge_12 = Edge {id: 12, entry: 49, exit: 50, weight: 1};
+    let edge_13 = Edge {id: 13, entry: 48, exit: 59, weight: 1};
+    let edge_14 = Edge {id: 14, entry: 0, exit: 100, weight: 1}; // 0 -> 100
+    let edge_15 = Edge {id: 15, entry: 100, exit: 10, weight: 1}; // 100 -> 10 // goal
+    let edge_16 = Edge {id: 16, entry: 5, exit: 9, weight: 1}; 
+    let edge_17 = Edge {id: 17, entry: 9, exit: 200, weight: 1}; 
+    let edge_18 = Edge {id: 18, entry: 200, exit: 10, weight: 1};
+    let edge_19 = Edge {id: 19, entry: 7, exit: 5, weight: 1}; // 7 -> 7, 5 -> 7 circular loop
 
 
-    // move egdges into vector
-    let mut egdgevec = Vec::new(); // hold all the egdges
-    egdgevec.push(egdge_1);
-    egdgevec.push(egdge_2);
-    egdgevec.push(egdge_3);
-    egdgevec.push(egdge_4);
-    egdgevec.push(egdge_5);
-    egdgevec.push(egdge_6);
-    egdgevec.push(egdge_7);
-    egdgevec.push(egdge_8);
-    egdgevec.push(egdge_9);
-    egdgevec.push(egdge_10);
-    egdgevec.push(egdge_11);
-    egdgevec.push(egdge_12);
-    egdgevec.push(egdge_13);
-    egdgevec.push(egdge_14);
-    egdgevec.push(egdge_15);
-    egdgevec.push(egdge_16);
-    egdgevec.push(egdge_17);
-    egdgevec.push(egdge_18);
-    egdgevec.push(egdge_19);
+    // move edges into vector
+    let mut edgevec = Vec::new(); // hold all the edges
+    edgevec.push(edge_1);
+    edgevec.push(edge_2);
+    edgevec.push(edge_3);
+    edgevec.push(edge_4);
+    edgevec.push(edge_5);
+    edgevec.push(edge_6);
+    edgevec.push(edge_7);
+    edgevec.push(edge_8);
+    edgevec.push(edge_9);
+    edgevec.push(edge_10);
+    edgevec.push(edge_11);
+    edgevec.push(edge_12);
+    edgevec.push(edge_13);
+    edgevec.push(edge_14);
+    edgevec.push(edge_15);
+    edgevec.push(edge_16);
+    edgevec.push(edge_17);
+    edgevec.push(edge_18);
+    edgevec.push(edge_19);
 
     let start_floor: u8 = 0; // starting position
     let end_floor: u8 = 10; // position we want to reach
-    print_shortest_paths(start_floor, end_floor, egdgevec);
+    print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
-// egdges of prolog functions derived from prolog tasks by Wiebke Petersen (Uni Düsseldorf)
+// edges of prolog functions derived from prolog tasks by Wiebke Petersen (Uni Düsseldorf)
 fn test_prolog1() {
     println!("prolog 1");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 5, weight: 1};
-    let egdge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
-    let egdge_3 = Edge {id: 3, entry: 5, exit: 7, weight: 1};
-    let egdge_4 = Edge {id: 4, entry: 7, exit: 10, weight: 1};
+    let edge_1 = Edge {id: 1, entry: 0, exit: 5, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
+    let edge_3 = Edge {id: 3, entry: 5, exit: 7, weight: 1};
+    let edge_4 = Edge {id: 4, entry: 7, exit: 10, weight: 1};
     let start_floor: u8 = 0;
     let end_floor: u8 = 10;
-    let mut egdgevec = Vec::new();
-    egdgevec.push(egdge_1);
-    egdgevec.push(egdge_2);
-    egdgevec.push(egdge_3);
-    egdgevec.push(egdge_4);
-    print_shortest_paths(start_floor, end_floor, egdgevec);
+    let mut edgevec = Vec::new();
+    edgevec.push(edge_1);
+    edgevec.push(edge_2);
+    edgevec.push(edge_3);
+    edgevec.push(edge_4);
+    print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
 
 fn test_prolog2() {
     println!("prolog 2");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 5, weight: 1};
-    let egdge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
-    let egdge_3 = Edge {id: 3, entry: 5, exit: 8, weight: 1};
-    let egdge_4 = Edge {id: 4, entry: 8, exit: 10, weight: 1};
+    let edge_1 = Edge {id: 1, entry: 0, exit: 5, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
+    let edge_3 = Edge {id: 3, entry: 5, exit: 8, weight: 1};
+    let edge_4 = Edge {id: 4, entry: 8, exit: 10, weight: 1};
     let start_floor: u8 = 0;
     let end_floor: u8 = 10;
-    let mut egdgevec = Vec::new();
-    egdgevec.push(egdge_1);
-    egdgevec.push(egdge_2);
-    egdgevec.push(egdge_3);
-    egdgevec.push(egdge_4);
-    print_shortest_paths(start_floor, end_floor, egdgevec);
+    let mut edgevec = Vec::new();
+    edgevec.push(edge_1);
+    edgevec.push(edge_2);
+    edgevec.push(edge_3);
+    edgevec.push(edge_4);
+    print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
 fn test_prolog3() {
     println!("prolog 3");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 6, weight: 1};
-    let egdge_2 = Edge {id: 2, entry: 6, exit: 19, weight: 1};
-    let egdge_3 = Edge {id: 3, entry: 3, exit: 6, weight: 1};
-    let egdge_4 = Edge {id: 4, entry: 3, exit: 9, weight: 1};
-    let egdge_5 = Edge {id: 5, entry: 9, exit: 19, weight: 1};
-    let egdge_6 = Edge {id: 6, entry: 3, exit: 13, weight: 1};
-    let egdge_7 = Edge {id: 7, entry: 13, exit: 17, weight: 1};
-    let egdge_8 = Edge {id: 8, entry: 17, exit: 19, weight: 1};
-    let egdge_9 = Edge {id: 9, entry: 9, exit: 17, weight: 1};
-    let egdge_10 = Edge {id: 10, entry: 6, exit: 17, weight: 1};
+    let edge_1 = Edge {id: 1, entry: 0, exit: 6, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 6, exit: 19, weight: 1};
+    let edge_3 = Edge {id: 3, entry: 3, exit: 6, weight: 1};
+    let edge_4 = Edge {id: 4, entry: 3, exit: 9, weight: 1};
+    let edge_5 = Edge {id: 5, entry: 9, exit: 19, weight: 1};
+    let edge_6 = Edge {id: 6, entry: 3, exit: 13, weight: 1};
+    let edge_7 = Edge {id: 7, entry: 13, exit: 17, weight: 1};
+    let edge_8 = Edge {id: 8, entry: 17, exit: 19, weight: 1};
+    let edge_9 = Edge {id: 9, entry: 9, exit: 17, weight: 1};
+    let edge_10 = Edge {id: 10, entry: 6, exit: 17, weight: 1};
     let start_floor: u8 = 0;
     let end_floor: u8 = 19;
-    let mut egdgevec = Vec::new();
-    egdgevec.push(egdge_1);
-    egdgevec.push(egdge_2);
-    egdgevec.push(egdge_3);
-    egdgevec.push(egdge_4);
-    egdgevec.push(egdge_5);
-    egdgevec.push(egdge_6);
-    egdgevec.push(egdge_7);
-    egdgevec.push(egdge_8);
-    egdgevec.push(egdge_9);
-    egdgevec.push(egdge_10);
-    print_shortest_paths(start_floor, end_floor, egdgevec);
+    let mut edgevec = Vec::new();
+    edgevec.push(edge_1);
+    edgevec.push(edge_2);
+    edgevec.push(edge_3);
+    edgevec.push(edge_4);
+    edgevec.push(edge_5);
+    edgevec.push(edge_6);
+    edgevec.push(edge_7);
+    edgevec.push(edge_8);
+    edgevec.push(edge_9);
+    edgevec.push(edge_10);
+    print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
 
 fn test_prolog4() {
     println!("prolog 4");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 6, weight: 1};
-    let egdge_2 = Edge {id: 2, entry: 2, exit: 6, weight: 1};
-    let egdge_3 = Edge {id: 3, entry: 6, exit: 8, weight: 1};
-    let egdge_4 = Edge {id: 4, entry: 8, exit: 10, weight: 1};
-    let egdge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1};
+    let edge_1 = Edge {id: 1, entry: 0, exit: 6, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 2, exit: 6, weight: 1};
+    let edge_3 = Edge {id: 3, entry: 6, exit: 8, weight: 1};
+    let edge_4 = Edge {id: 4, entry: 8, exit: 10, weight: 1};
+    let edge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 10;
-    let mut egdgevec = Vec::new();
-    egdgevec.push(egdge_1);
-    egdgevec.push(egdge_2);
-    egdgevec.push(egdge_3);
-    egdgevec.push(egdge_4);
-    egdgevec.push(egdge_5);
-    print_shortest_paths(start_floor, end_floor, egdgevec);
+    let mut edgevec = Vec::new();
+    edgevec.push(edge_1);
+    edgevec.push(edge_2);
+    edgevec.push(edge_3);
+    edgevec.push(edge_4);
+    edgevec.push(edge_5);
+    print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
 fn test_prolog5() {
     println!("prolog 5");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
-    let egdge_2 = Edge {id: 2, entry: 2, exit: 6, weight: 1};
-    let egdge_3 = Edge {id: 3, entry: 0, exit: 2, weight: 1};
-    let egdge_4 = Edge {id: 4, entry: 3, exit: 10, weight: 1};
-    let egdge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1};
+    let edge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 2, exit: 6, weight: 1};
+    let edge_3 = Edge {id: 3, entry: 0, exit: 2, weight: 1};
+    let edge_4 = Edge {id: 4, entry: 3, exit: 10, weight: 1};
+    let edge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 10;
-    let mut egdgevec = Vec::new();
-    egdgevec.push(egdge_1);
-    egdgevec.push(egdge_2);
-    egdgevec.push(egdge_3);
-    egdgevec.push(egdge_4);
-    egdgevec.push(egdge_5);
-    print_shortest_paths(start_floor, end_floor, egdgevec);
+    let mut edgevec = Vec::new();
+    edgevec.push(edge_1);
+    edgevec.push(edge_2);
+    edgevec.push(edge_3);
+    edgevec.push(edge_4);
+    edgevec.push(edge_5);
+    print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
 
 fn test_prolog6() {
     println!("prolog 6");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
-    let egdge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
-    let egdge_3 = Edge {id: 3, entry: 3, exit: 8, weight: 1};
-    let egdge_4 = Edge {id: 4, entry: 8, exit: 12, weight: 1};
-    let egdge_5 = Edge {id: 5, entry: 8, exit: 12, weight: 1};
+    let edge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
+    let edge_3 = Edge {id: 3, entry: 3, exit: 8, weight: 1};
+    let edge_4 = Edge {id: 4, entry: 8, exit: 12, weight: 1};
+    let edge_5 = Edge {id: 5, entry: 8, exit: 12, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 12;
-    let mut egdgevec = Vec::new();
-    egdgevec.push(egdge_1);
-    egdgevec.push(egdge_2);
-    egdgevec.push(egdge_3);
-    egdgevec.push(egdge_4);
-    egdgevec.push(egdge_5);
-    print_shortest_paths(start_floor, end_floor, egdgevec);
+    let mut edgevec = Vec::new();
+    edgevec.push(edge_1);
+    edgevec.push(edge_2);
+    edgevec.push(edge_3);
+    edgevec.push(edge_4);
+    edgevec.push(edge_5);
+    print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
 fn test_prolog7() {
     println!("prolog 7");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 6, weight: 1};
-    let egdge_2 = Edge {id: 2, entry: 0, exit: 8, weight: 1};
-    let egdge_3 = Edge {id: 3, entry: 3, exit: 8, weight: 1};
-    let egdge_4 = Edge {id: 4, entry: 1, exit: 3, weight: 1};
-    let egdge_5 = Edge {id: 5, entry: 6, exit: 15, weight: 1};
-    let egdge_6 = Edge {id: 6, entry: 8, exit: 15, weight: 1};
+    let edge_1 = Edge {id: 1, entry: 0, exit: 6, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 0, exit: 8, weight: 1};
+    let edge_3 = Edge {id: 3, entry: 3, exit: 8, weight: 1};
+    let edge_4 = Edge {id: 4, entry: 1, exit: 3, weight: 1};
+    let edge_5 = Edge {id: 5, entry: 6, exit: 15, weight: 1};
+    let edge_6 = Edge {id: 6, entry: 8, exit: 15, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 15;
-    let mut egdgevec = Vec::new();
-    egdgevec.push(egdge_1);
-    egdgevec.push(egdge_2);
-    egdgevec.push(egdge_3);
-    egdgevec.push(egdge_4);
-    egdgevec.push(egdge_5);
-    egdgevec.push(egdge_6);
-    print_shortest_paths(start_floor, end_floor, egdgevec);
+    let mut edgevec = Vec::new();
+    edgevec.push(edge_1);
+    edgevec.push(edge_2);
+    edgevec.push(edge_3);
+    edgevec.push(edge_4);
+    edgevec.push(edge_5);
+    edgevec.push(edge_6);
+    print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
 fn test_prolog8() {
     println!("prolog 8");
-    let egdge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
-    let egdge_2 = Edge {id: 2, entry: 7, exit: 10, weight: 1};
-    let egdge_3 = Edge {id: 3, entry: 3, exit: 7, weight: 1};
-    let egdge_4 = Edge {id: 4, entry: 3, exit: 10, weight: 1};
-    let egdge_5 = Edge {id: 5, entry: 10, exit: 15, weight: 1};
+    let edge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 7, exit: 10, weight: 1};
+    let edge_3 = Edge {id: 3, entry: 3, exit: 7, weight: 1};
+    let edge_4 = Edge {id: 4, entry: 3, exit: 10, weight: 1};
+    let edge_5 = Edge {id: 5, entry: 10, exit: 15, weight: 1};
 
     let start_floor: u8 = 0;
     let end_floor: u8 = 15;
-    let mut egdgevec = Vec::new();
-    egdgevec.push(egdge_1);
-    egdgevec.push(egdge_2);
-    egdgevec.push(egdge_3);
-    egdgevec.push(egdge_4);
-    egdgevec.push(egdge_5);
-    print_shortest_paths(start_floor, end_floor, egdgevec);
+    let mut edgevec = Vec::new();
+    edgevec.push(edge_1);
+    edgevec.push(edge_2);
+    edgevec.push(edge_3);
+    edgevec.push(edge_4);
+    edgevec.push(edge_5);
+    print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
 fn main() {
