@@ -9,15 +9,25 @@ struct Edge {
     weight: u32,
 }
 
+#[derive(Clone)]
 struct Path { // path that holds several edges
     edges: Vec<Edge>,
     weight: u32,
+    edge_ids: Vec<u8>,
+}
+
+impl Path {
+    fn append(&mut self, edge: Edge) {
+        self.edges.push(edge.clone());
+        self.weight += edge.weight;
+        self.edge_ids.push(edge.id);
+    }
 }
 
 /*                 Printing                                      */
 fn get_edge_str(edge: &Edge) -> String  {
     // take edge reference and return info as string for usage in print()
-    return format!("edge {}:  ({} -> {})", edge.id, edge.entry, edge.exit);
+    return format!("edge {}:  ({} -> {} [{}])", edge.id, edge.entry, edge.exit, edge.weight);
 }
 
 fn print_edge(edge: &Edge) {
@@ -478,4 +488,16 @@ fn main() {
     test_prolog6();
     test_prolog7();
     test_prolog8();
+
+
+/*
+    let edge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
+    let edge_2 = Edge {id: 2, entry: 7, exit: 10, weight: 3};
+    let edge_3 = Edge {id: 3, entry: 3, exit: 11, weight: 2};
+    let mut path = Path  { edges: Vec::new(), weight: 0, edge_ids: Vec::new() }; // init
+    path.append(edge_1);
+    path.append(edge_2);
+    path.append(edge_3);
+*/
+
 }
