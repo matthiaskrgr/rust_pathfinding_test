@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Clone)] // give clone trait to this struct
 struct Edge {
     // id: unique edge identifier
@@ -7,6 +9,12 @@ struct Edge {
     entry: u8,
     exit: u8,
     weight: u32,
+}
+
+impl fmt::Display for Edge {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Edge {} ({} -> {}  w{})", self.id, self.entry, self.exit, self.weight)
+    }
 }
 
 #[derive(Clone)]
@@ -24,21 +32,17 @@ impl Path {
     }
 }
 
-/*                 Printing                                      */
-fn get_edge_str(edge: &Edge) -> String  {
-    // take edge reference and return info as string for usage in print()
-    return format!("edge {}:  ({} -> {} [{}])", edge.id, edge.entry, edge.exit, edge.weight);
-}
+
 
 fn print_edge(edge: &Edge) {
     // print edge info to stdout
-    return println!("{}", get_edge_str(&edge));
+    return println!("{}", edge);
 }
 
 fn print_edge_vector(edge_vector: &Vec<Edge>) {
     // print all edge info of vector
     for edge in edge_vector {
-        print_edge(&edge);
+        print!("{}", edge);
     }
 }
 
@@ -79,9 +83,9 @@ fn prune_edges(available_edges: &Vec<Edge>, start_floor: u8, end_floor: u8) -> V
     for edge in available_edges {
         // make sure we don't remove our root and goal edge
         if !entries.contains(&((edge).exit)) && (edge).exit != end_floor  { // remove deadends
-            println!("pruning dead end:    {}", get_edge_str(&edge));
+            println!("pruning dead end:    {}", edge);
         } else if !exits.contains(&((edge).entry)) && (edge).entry != start_floor { // remove unreachable
-            println!("pruning unreachable: {}", get_edge_str(&edge));
+            println!("pruning unreachable: {}", edge);
         } else { // edge is neither dead end nor unreachable and thus usable
             usable_edges.push(edge.clone());
         }
@@ -127,16 +131,16 @@ fn get_possible_new_connections(edge: &Edge, purged_edges: &Vec<Edge>) -> Vec<Ed
 fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     // meh...
     #[allow(non_snake_case)]
-    let  START_EDGE = start_floor;
+    let  START_FLOOR = start_floor;
     #[allow(non_snake_case)]
-    let  END_EDGE = end_floor; 
+    let  END_FLOOR = end_floor; 
 
     let edges = edgevec; // immutable now
     println!("Current edges: ");
         print_edge_vector(&edges); 
 
     // prune
-    let purged_edges = prune_edges_recursively(edges, START_EDGE, END_EDGE);
+    let purged_edges = prune_edges_recursively(edges, START_FLOOR, END_FLOOR);
 
     if purged_edges.len() == 0 {
         println!("No edges left to traverse!");
@@ -155,8 +159,8 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     // find entry paths
     let mut initial_entries = Vec::new();
     for edge in &purged_edges {
-        if edge.entry == START_EDGE { // possible starting points
-            println!("We can start at {}", get_edge_str(&edge));
+        if edge.entry == START_FLOOR { // possible starting points
+            println!("We can start at {}", edge);
             initial_entries.push(edge);
         }
     }
@@ -211,7 +215,7 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
 
         let mut break_loop = true;
         for subvector in &vector_of_paths {
-            if subvector.last().unwrap().exit != END_EDGE { // if we have one subpath end edge that has not reached end yet
+            if subvector.last().unwrap().exit != END_FLOOR { // if we have one subpath end edge that has not reached end yet
                 break_loop = false;                          // we must continue searching
             }
         } 
@@ -236,10 +240,10 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
         it +=1;
         println!("\tsubpath {}", it);
         for edge in subpath  {
-            println!("\t\t{}", get_edge_str(&edge));
+            println!("\t\t{}", edge);
         }
     }
-    println!("\nshortest path(s) from {} to {}:", START_EDGE, END_EDGE);
+    println!("\nshortest path(s) from {} to {}:", START_FLOOR, END_FLOOR);
     let mut shortes_paths = Vec::new();
     let mut index = 0; // dont add first index twice
     shortes_paths.push(vector_of_paths.first().unwrap());
@@ -254,7 +258,7 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     }
     for subpath in shortes_paths {
         for edge in subpath {
-            println!("{}", get_edge_str(&edge));
+            println!("{}", edge);
         }
         println!("====");
     }
