@@ -1,0 +1,6 @@
+[package]
+name = "pathfinding"
+version = "0.1.0"
+authors = ["Matthias Krüger"]
+
+[dependencies]
