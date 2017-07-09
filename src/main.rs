@@ -33,12 +33,6 @@ impl Path {
 }
 
 
-
-fn print_edge(edge: &Edge) {
-    // print edge info to stdout
-    return println!("{}", edge);
-}
-
 fn print_edge_vector(edge_vector: &Vec<Edge>) {
     // print all edge info of vector
     for edge in edge_vector {
