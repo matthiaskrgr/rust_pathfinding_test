@@ -25,6 +25,8 @@ struct Path { // path that holds several edges
 }
 
 impl Path {
+    // init:
+    // let mut path = Path { edges: Vec::new(), weight: 0, edge_ids: Vec::new() }
     fn append(&mut self, edge: Edge) {
         self.edges.push(edge.clone());
         self.weight += edge.weight;
@@ -172,14 +174,14 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     //  edge5   edge18  edge4 
     //   ...      ...
     for start_edge in initial_entries {
-        let mut path_vect = Vec::new();
-        path_vect.push((start_edge).clone()); // start a new path_vector
+        let mut path = Path { edges: Vec::new(), weight: 0, edge_ids: Vec::new() }
+        path.append(start_edge.clone()) // start a new path_vector
         walked_edges.push(start_edge.id); // mark edge as traversed
-        vector_of_paths.push(path_vect.clone()); // save new path vector to VoP
+        vector_of_paths.push(path.clone()); // save new path vector to VoP
     }
     'iterative_pathfinding_loop: loop {
 
-        let mut vector_of_paths_tmp: Vec<Vec<Edge>> = Vec::new(); // vector containing vectors containing edges
+        let mut vector_of_paths_tmp: Vec<Path> = Vec::new(); // vector containing path structs
         for subpath in &vector_of_paths {
             // collect ids of edges in this subpath
             let mut subpath_edge_ids = Vec::new();
