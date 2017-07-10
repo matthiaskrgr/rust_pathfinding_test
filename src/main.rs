@@ -174,8 +174,8 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     //  edge5   edge18  edge4 
     //   ...      ...
     for start_edge in initial_entries {
-        let mut path = Path { edges: Vec::new(), weight: 0, edge_ids: Vec::new() }
-        path.append(start_edge.clone()) // start a new path_vector
+        let mut path = Path { edges: Vec::new(), weight: 0, edge_ids: Vec::new() };
+        path.append(start_edge.clone()); // start a new path_vector
         walked_edges.push(start_edge.id); // mark edge as traversed
         vector_of_paths.push(path.clone()); // save new path vector to VoP
     }
@@ -184,11 +184,12 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
         let mut vector_of_paths_tmp: Vec<Path> = Vec::new(); // vector containing path structs
         for subpath in &vector_of_paths {
             // collect ids of edges in this subpath
-            let mut subpath_edge_ids = Vec::new();
+           /* let mut subpath_edge_ids = Vec::new();
             for edge in subpath {
                 subpath_edge_ids.push(edge.id);
             }
-            let last_edge_of_subpath = subpath.last().unwrap(); // get last edge of the subpath
+            */
+            let last_edge_of_subpath = subpath.last(); // get last edge of the subpath
 
             // and find new connections
             let new_conns = get_possible_new_connections(&last_edge_of_subpath, &purged_edges);
@@ -196,12 +197,12 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
 
             if new_conns.len() > 0 { // we have new connections
                 for new_connection in new_conns.iter() {
-                    if subpath_edge_ids.contains(&(new_connection.id)) { // avoid hang in circular paths (path( 5 -> 10) ; path(10 -> 5)
+                    if subpath.edge_ids.contains(&(new_connection.id)) { // avoid hang in circular paths (path( 5 -> 10) ; path(10 -> 5)
                         continue;
                     }
                     //println!("possible new connection: {}", get_edge_str(&new_connection));
                     let mut subpath_tmp = subpath.clone(); // clone current subpath
-                    subpath_tmp.push(new_connection.clone()); // and append edge
+                    subpath_tmp.append(new_connection.clone()); // and append edge
                     vector_of_paths_tmp.push(subpath_tmp.clone()); // add the new subpath to the new vector
                     walked_edges.push(new_connection.id); // save edge nr as walked
 
@@ -215,7 +216,7 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
 
         let mut break_loop = true;
         for subvector in &vector_of_paths {
-            if subvector.last().unwrap().exit != END_EDGE { // if we have one subpath end edge that has not reached end yet
+            if subvector.last().exit != END_EDGE { // if we have one subpath end edge that has not reached end yet
                 break_loop = false;                          // we must continue searching
             }
         } 
@@ -239,25 +240,25 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     for subpath in &vector_of_paths {
         it +=1;
         println!("\tsubpath {}", it);
-        for edge in subpath  {
+        for edge in &subpath.edges  {
             println!("\t\t{}", edge);
         }
     }
     println!("\nshortest path(s) from {} to {}:", START_EDGE, END_EDGE);
     let mut shortes_paths = Vec::new();
     let mut index = 0; // dont add first index twice
-    shortes_paths.push(vector_of_paths.first().unwrap());
-    for subpath in &vector_of_paths {
-        if subpath.len() < shortes_paths[0].len() { // found smaller path
+    shortes_paths.push((vector_of_paths.first().unwrap()).clone());
+    for subpath in vector_of_paths {
+        if subpath.edges.len() < shortes_paths[0].edges.len() { // found smaller path
             shortes_paths.clear();
-            shortes_paths.push(subpath);
-        } else if subpath.len() == shortes_paths[0].len() && index != 0 { // found path of equal size, don't add first path twice if it is the shortest
-            shortes_paths.push(subpath);
+            shortes_paths.push(subpath.clone());
+        } else if subpath.edges.len() == shortes_paths[0].edges.len() && index != 0 { // found path of equal size, don't add first path twice if it is the shortest
+            shortes_paths.push(subpath.clone());
         }
         index += 1;
     }
     for subpath in shortes_paths {
-        for edge in subpath {
+        for edge in subpath.edges {
             println!("{}", edge);
         }
         println!("====");
