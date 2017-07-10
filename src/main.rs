@@ -30,6 +30,10 @@ impl Path {
         self.weight += edge.weight;
         self.edge_ids.push(edge.id);
     }
+
+    fn last(&self) -> &Edge {
+        return (self.edges).last().unwrap();
+    }
 }
 
 
