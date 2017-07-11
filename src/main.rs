@@ -99,8 +99,6 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     println!("Current edges: ");
         print_edge_vector(&edges); 
 
-    // prune
-
     if edges.len() == 0 {
         println!("No edges left to traverse!");
         std::process::exit(1);
@@ -458,16 +456,4 @@ fn main() {
     test_prolog6();
     test_prolog7();
     test_prolog8();
-
-
-/*
-    let edge_1 = Edge {id: 1, entry: 0, exit: 3, weight: 1};
-    let edge_2 = Edge {id: 2, entry: 7, exit: 10, weight: 3};
-    let edge_3 = Edge {id: 3, entry: 3, exit: 11, weight: 2};
-    let mut path = Path  { edges: Vec::new(), weight: 0, edge_ids: Vec::new() }; // init
-    path.append(edge_1);
-    path.append(edge_2);
-    path.append(edge_3);
-*/
-
 }
