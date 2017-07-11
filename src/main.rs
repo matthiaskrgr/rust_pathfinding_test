@@ -20,9 +20,9 @@ impl fmt::Display for Edge {
 
 #[derive(Clone)]
 struct Path { // path that holds several edges
-    edges: Vec<Edge>,
-    weight: f64,
-    edge_ids: Vec<u16>,
+    edges: Vec<Edge>, // list of edges
+    weight: f64, // sum of weight of edges
+    edge_ids: Vec<u16>, // list of ids of edges
 }
 
 impl Path {
@@ -68,11 +68,13 @@ fn get_possible_new_connections(edge: &Edge, purged_edges: &Vec<Edge>) -> Vec<Ed
             connection_vec.push(poss_conn.clone());
         }
     }
-
     return connection_vec;
 }
 
 fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
+    println!("Processing edges:");
+    print_edge_vector(&edges);
+
     // make sure input edges are valid
     verify_edges(&edges);
     #[allow(non_snake_case)]
@@ -85,9 +87,6 @@ fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
         node_entries.push(&(node.entry));
     }
     let node_entries = node_entries; // immut
-
-    println!("Processing edges:");
-    print_edge_vector(&edges);
 
     let mut vector_of_paths = Vec::new(); // store paths in this vector, this will be a vector of vectors
 
