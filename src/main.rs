@@ -164,7 +164,9 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
 
         // assume we are done
         let mut break_loop = true;
-        for subvector in &vector_of_paths {
+        let vector_of_paths__tmp = vector_of_paths.clone(); // copy so we  can still modify the original
+        let mut index = 0;
+        for subvector in &vector_of_paths__tmp {
             let last_edge = subvector.last();
             let exit = last_edge.exit;
             // if there is one path that has not reached end is not a deadend
@@ -172,7 +174,12 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
             if last_edge.exit != END_EDGE && !is_deadend {
                 // we have to continue searching
                 break_loop = false;
+            } else if last_edge.exit != END_EDGE && is_deadend { // not reached but deadend => remove deadend
+                vector_of_paths.remove(index);
             }
+            index += 1;
+        
+        
         } 
         if break_loop { // we are done
             println!("breaking search loop");
@@ -441,7 +448,7 @@ fn test_prolog8() {
 
 fn main() {
     test_matthiaskrgr();
-/*
+
     test_prolog1();
     test_prolog3();
     test_prolog2();
@@ -450,5 +457,5 @@ fn main() {
     test_prolog6();
     test_prolog7();
     test_prolog8();
-*/
+
 }
