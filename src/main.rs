@@ -103,7 +103,6 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
         std::process::exit(1);
     }
 
-    let mut walked_edges = Vec::new(); // store numbers/ids of walked edges in this vector, 
 
     let mut vector_of_paths = Vec::new(); // store paths in this vector, this will be a vector of vectors
 
@@ -129,7 +128,6 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
     for start_edge in initial_entries {
         let mut path = Path { edges: Vec::new(), weight: 0.0, edge_ids: Vec::new() };
         path.append(start_edge.clone()); // start a new path_vector
-        walked_edges.push(start_edge.id); // mark edge as traversed
         vector_of_paths.push(path.clone()); // save new path vector to VoP
     }
     'iterative_pathfinding_loop: loop {
@@ -151,8 +149,6 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
                     let mut subpath_tmp = subpath.clone(); // clone current subpath
                     subpath_tmp.append(new_connection.clone()); // and append edge
                     vector_of_paths_tmp.push(subpath_tmp.clone()); // add the new subpath to the new vector
-                    walked_edges.push(new_connection.id); // save edge nr as walked
-
                 }
             } else { // we have no new connections, clone subpath anyway so it doesnt get dropped
                 vector_of_paths_tmp.push(subpath.clone());
@@ -186,11 +182,6 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
     } // iterative_path_finding_loop
 
 
-    // debugging:
-    print!("Walked edges:");
-    for nr in &walked_edges {
-        print!(" {}", nr);
-    }
     println!();
     // print base vector:
     println!("Printing Vector of Paths");
