@@ -135,6 +135,14 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     #[allow(non_snake_case)]
     let  END_EDGE = end_floor; 
 
+    let tmpedgevec = edgevec.clone();
+    let mut node_entries = Vec::new();
+    for node in &tmpedgevec {
+        node_entries.push(&(node.entry));
+    }
+    let node_entries = node_entries; // immut
+
+
     let edges = edgevec; // immutable now
     println!("Current edges: ");
         print_edge_vector(&edges); 
@@ -214,14 +222,21 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
 
         vector_of_paths = vector_of_paths_tmp.clone(); // make vector_of_paths_tmp available in next loop iteration
 
+        // assume we are done
         let mut break_loop = true;
-        for subvector in &vector_of_paths {
-            if subvector.last().exit != END_EDGE { // if we have one subpath end edge that has not reached end yet
-                break_loop = false;                          // we must continue searching
+        let VoP_tmp = vector_of_paths.clone();
+        for subvector in VoP_tmp {
+            let last_edge = subvector.last();
+            let exit = last_edge.exit;
+            // if there is one path that has not reached end is not a deadend
+            let mut is_deadend = !node_entries.contains(&&exit);
+            if last_edge.exit != END_EDGE && !is_deadend  {
+                // then we have to continue searching
+                break_loop = false;
             }
         } 
-        if break_loop {
-            //println!("breaking search loop");
+        if break_loop { // we are done
+            println!("breaking search loop");
             break 'iterative_pathfinding_loop;
         }
 
