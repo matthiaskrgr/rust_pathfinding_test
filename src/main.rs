@@ -80,6 +80,7 @@ fn get_possible_new_connections(edge: &Edge, purged_edges: &Vec<Edge>) -> Vec<Ed
 
 
 fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
+    verify_edges(&edgevec);
     // meh...
     #[allow(non_snake_case)]
     let  START_EDGE = start_floor;
@@ -174,12 +175,11 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
 
         // assume we are done
         let mut break_loop = true;
-        let VoP_tmp = vector_of_paths.clone();
-        for subvector in VoP_tmp {
+        for subvector in &vector_of_paths {
             let last_edge = subvector.last();
             let exit = last_edge.exit;
             // if there is one path that has not reached end is not a deadend
-            let mut is_deadend = !node_entries.contains(&&exit);
+            let is_deadend = !node_entries.contains(&&exit);
             if last_edge.exit != END_EDGE && !is_deadend  {
                 // then we have to continue searching
                 break_loop = false;
