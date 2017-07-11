@@ -35,18 +35,18 @@ impl Path {
     }
 
     fn last(&self) -> &Edge {
-        return (self.edges).last().unwrap();
+        (self.edges).last().unwrap()
     }
 }
 
-fn print_edge_vector(edge_vector: &Vec<Edge>) {
+fn print_edge_vector(edge_vector: &[Edge]) {
     // print all edge info of vector
     for edge in edge_vector {
         println!("{}", edge);
     }
 }
 
-fn verify_edges(edges: &Vec<Edge>)
+fn verify_edges(edges: &[Edge])
 {
     let mut edge_ids = Vec::new();
     for edge in edges {
@@ -61,14 +61,14 @@ fn verify_edges(edges: &Vec<Edge>)
 }
 
 
-fn get_possible_new_connections(edge: &Edge, purged_edges: &Vec<Edge>) -> Vec<Edge> {
+fn get_possible_new_connections(edge: &Edge, purged_edges: &[Edge]) -> Vec<Edge> {
     let mut connection_vec = Vec::new();
     for poss_conn in purged_edges {
         if edge.exit == (&poss_conn).entry { // collect possible new connections
             connection_vec.push(poss_conn.clone());
         }
     }
-    return connection_vec;
+    connection_vec
 }
 
 fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
@@ -123,8 +123,8 @@ fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
             let new_conns = get_possible_new_connections(&last_edge_of_subpath, &edges);
 
             //println!("found new connections: {}", new_conns.len());
-            if new_conns.len() > 0 { // we have new connections
-                for new_connection in new_conns.iter() {
+            if !new_conns.is_empty() { // we have new connections
+                for new_connection in &new_conns {
                     if subpath.edge_ids.contains(&(new_connection.id)) { // avoid hang in circular paths (path( 5 -> 10) ; path(10 -> 5)
                         continue;
                     }
