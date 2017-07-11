@@ -209,10 +209,10 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
     shortes_paths.push((vector_of_paths.first().unwrap()).clone());
 
     for subpath in vector_of_paths {
-        if subpath.edges.len() < shortes_paths[0].edges.len() { // found smaller path
+        if subpath.weight < shortes_paths[0].weight { // found smaller path
             shortes_paths.clear();
             shortes_paths.push(subpath.clone());
-        } else if subpath.edges.len() == shortes_paths[0].edges.len() && index != 0 { // found path of equal size, don't add first path twice if it is the shortest
+        } else if subpath.weight == shortes_paths[0].weight && index != 0 { // found path of equal size, don't add first path twice if it is the shortest
             shortes_paths.push(subpath.clone());
         }
         index += 1;
