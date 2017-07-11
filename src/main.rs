@@ -5,9 +5,9 @@ struct Edge {
     // id: unique edge identifier
     // entry: entry point of the edge
     // exit: exit point of the edge
-    id: u8, 
-    entry: u8,
-    exit: u8,
+    id: u16, 
+    entry: u16,
+    exit: u16,
     weight: u32,
 }
 
@@ -21,7 +21,7 @@ impl fmt::Display for Edge {
 struct Path { // path that holds several edges
     edges: Vec<Edge>,
     weight: u32,
-    edge_ids: Vec<u8>,
+    edge_ids: Vec<u16>,
 }
 
 impl Path {
@@ -79,7 +79,7 @@ fn get_possible_new_connections(edge: &Edge, purged_edges: &Vec<Edge>) -> Vec<Ed
 }
 
 
-fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
+fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
     verify_edges(&edgevec);
     // meh...
     #[allow(non_snake_case)]
@@ -248,6 +248,9 @@ fn test_matthiaskrgr() {
     let edge_19 = Edge {id: 19, entry: 7, exit: 5, weight: 1}; // 7 -> 7, 5 -> 7 circular loop
 
 
+
+
+
     // move edges into vector
     let mut edgevec = Vec::new(); // hold all the edges
     edgevec.push(edge_1);
@@ -270,8 +273,8 @@ fn test_matthiaskrgr() {
     edgevec.push(edge_18);
     edgevec.push(edge_19);
 
-    let start_floor: u8 = 0; // starting position
-    let end_floor: u8 = 10; // position we want to reach
+    let start_floor: u16 = 0; // starting position
+    let end_floor: u16 = 10; // position we want to reach
     print_shortest_paths(start_floor, end_floor, edgevec);
 }
 
@@ -282,8 +285,8 @@ fn test_prolog1() {
     let edge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
     let edge_3 = Edge {id: 3, entry: 5, exit: 7, weight: 1};
     let edge_4 = Edge {id: 4, entry: 7, exit: 10, weight: 1};
-    let start_floor: u8 = 0;
-    let end_floor: u8 = 10;
+    let start_floor: u16 = 0;
+    let end_floor: u16 = 10;
     let mut edgevec = Vec::new();
     edgevec.push(edge_1);
     edgevec.push(edge_2);
@@ -299,8 +302,8 @@ fn test_prolog2() {
     let edge_2 = Edge {id: 2, entry: 5, exit: 10, weight: 1};
     let edge_3 = Edge {id: 3, entry: 5, exit: 8, weight: 1};
     let edge_4 = Edge {id: 4, entry: 8, exit: 10, weight: 1};
-    let start_floor: u8 = 0;
-    let end_floor: u8 = 10;
+    let start_floor: u16 = 0;
+    let end_floor: u16 = 10;
     let mut edgevec = Vec::new();
     edgevec.push(edge_1);
     edgevec.push(edge_2);
@@ -321,8 +324,8 @@ fn test_prolog3() {
     let edge_8 = Edge {id: 8, entry: 17, exit: 19, weight: 1};
     let edge_9 = Edge {id: 9, entry: 9, exit: 17, weight: 1};
     let edge_10 = Edge {id: 10, entry: 6, exit: 17, weight: 1};
-    let start_floor: u8 = 0;
-    let end_floor: u8 = 19;
+    let start_floor: u16 = 0;
+    let end_floor: u16 = 19;
     let mut edgevec = Vec::new();
     edgevec.push(edge_1);
     edgevec.push(edge_2);
@@ -346,8 +349,8 @@ fn test_prolog4() {
     let edge_4 = Edge {id: 4, entry: 8, exit: 10, weight: 1};
     let edge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1};
 
-    let start_floor: u8 = 0;
-    let end_floor: u8 = 10;
+    let start_floor: u16 = 0;
+    let end_floor: u16 = 10;
     let mut edgevec = Vec::new();
     edgevec.push(edge_1);
     edgevec.push(edge_2);
@@ -365,8 +368,8 @@ fn test_prolog5() {
     let edge_4 = Edge {id: 4, entry: 3, exit: 10, weight: 1};
     let edge_5 = Edge {id: 5, entry: 6, exit: 10, weight: 1};
 
-    let start_floor: u8 = 0;
-    let end_floor: u8 = 10;
+    let start_floor: u16 = 0;
+    let end_floor: u16 = 10;
     let mut edgevec = Vec::new();
     edgevec.push(edge_1);
     edgevec.push(edge_2);
@@ -385,8 +388,8 @@ fn test_prolog6() {
     let edge_4 = Edge {id: 4, entry: 8, exit: 12, weight: 1};
     let edge_5 = Edge {id: 5, entry: 8, exit: 12, weight: 1};
 
-    let start_floor: u8 = 0;
-    let end_floor: u8 = 12;
+    let start_floor: u16 = 0;
+    let end_floor: u16 = 12;
     let mut edgevec = Vec::new();
     edgevec.push(edge_1);
     edgevec.push(edge_2);
@@ -405,8 +408,8 @@ fn test_prolog7() {
     let edge_5 = Edge {id: 5, entry: 6, exit: 15, weight: 1};
     let edge_6 = Edge {id: 6, entry: 8, exit: 15, weight: 1};
 
-    let start_floor: u8 = 0;
-    let end_floor: u8 = 15;
+    let start_floor: u16 = 0;
+    let end_floor: u16 = 15;
     let mut edgevec = Vec::new();
     edgevec.push(edge_1);
     edgevec.push(edge_2);
@@ -425,8 +428,8 @@ fn test_prolog8() {
     let edge_4 = Edge {id: 4, entry: 3, exit: 10, weight: 1};
     let edge_5 = Edge {id: 5, entry: 10, exit: 15, weight: 1};
 
-    let start_floor: u8 = 0;
-    let end_floor: u8 = 15;
+    let start_floor: u16 = 0;
+    let end_floor: u16 = 15;
     let mut edgevec = Vec::new();
     edgevec.push(edge_1);
     edgevec.push(edge_2);
@@ -438,7 +441,7 @@ fn test_prolog8() {
 
 fn main() {
     test_matthiaskrgr();
-
+/*
     test_prolog1();
     test_prolog3();
     test_prolog2();
@@ -447,4 +450,5 @@ fn main() {
     test_prolog6();
     test_prolog7();
     test_prolog8();
+*/
 }
