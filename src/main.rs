@@ -140,18 +140,12 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
 
         let mut vector_of_paths_tmp: Vec<Path> = Vec::new(); // vector containing path structs
         for subpath in &vector_of_paths {
-            // collect ids of edges in this subpath
-           /* let mut subpath_edge_ids = Vec::new();
-            for edge in subpath {
-                subpath_edge_ids.push(edge.id);
-            }
-            */
             let last_edge_of_subpath = subpath.last(); // get last edge of the subpath
 
             // and find new connections
             let new_conns = get_possible_new_connections(&last_edge_of_subpath, &edges);
-            //println!("found new connections: {}", new_conns.len());
 
+            //println!("found new connections: {}", new_conns.len());
             if new_conns.len() > 0 { // we have new connections
                 for new_connection in new_conns.iter() {
                     if subpath.edge_ids.contains(&(new_connection.id)) { // avoid hang in circular paths (path( 5 -> 10) ; path(10 -> 5)
@@ -178,8 +172,8 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
             let exit = last_edge.exit;
             // if there is one path that has not reached end is not a deadend
             let is_deadend = !node_entries.contains(&&exit);
-            if last_edge.exit != END_EDGE && !is_deadend  {
-                // then we have to continue searching
+            if last_edge.exit != END_EDGE && !is_deadend {
+                // we have to continue searching
                 break_loop = false;
             }
         } 
