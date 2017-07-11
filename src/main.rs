@@ -60,59 +60,10 @@ fn verify_edges(edges: &Vec<Edge>)
     }
 }
 
-fn prune_edges(available_edges: &Vec<Edge>, start_floor: u8, end_floor: u8) -> Vec<Edge> {
-    // prune edges that are unreachable or dead ends
-    // fn does only as single pass!
-    let mut exits = Vec::new();
-    let mut entries = Vec::new();
-
-    // make sure we don't have several edges with same id
-    verify_edges(&available_edges);
-
-    for edge in available_edges { // collect entries and exits
-        if !exits.contains(&edge.exit) {
-            exits.push(edge.exit);
-        }
-        if !entries.contains(&edge.entry) {
-            entries.push(edge.entry);
-        }
-    }
-
-    let mut usable_edges = Vec::new();
-
-    for edge in available_edges {
-        // make sure we don't remove our root and goal edge
-        if !entries.contains(&((edge).exit)) && (edge).exit != end_floor  { // remove deadends
-            println!("pruning dead end:    {}", edge);
-        } else if !exits.contains(&((edge).entry)) && (edge).entry != start_floor { // remove unreachable
-            println!("pruning unreachable: {}", edge);
-        } else { // edge is neither dead end nor unreachable and thus usable
-            usable_edges.push(edge.clone());
-        }
-    }
-    return usable_edges;
-}
 
 
-fn prune_edges_recursively(edges: Vec<Edge>, start_floor: u8, end_floor: u8) -> Vec<Edge> {
-    // prune edges recursively until we cannot prune any further
-    println!("\n ===  pruning  ===");
-    let mut a;
-    let mut b;
-    let mut c = edges;
-    loop { // prune until failure
-        a  = prune_edges(&c, start_floor, end_floor);
-        b  = prune_edges(&a, start_floor, end_floor);
-        if a.len() == b.len() { // before == after
-            c = b;
-            break;
-        } else {
-//        println!("a.len: {}  b.len: {}", a.len(), b.len());
-            c = b;
-        }
-    }
-    return c;
-}
+
+
 
 fn get_possible_new_connections(edge: &Edge, purged_edges: &Vec<Edge>) -> Vec<Edge> {
     let mut connection_vec = Vec::new();
@@ -148,15 +99,14 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
         print_edge_vector(&edges); 
 
     // prune
-    let purged_edges = prune_edges_recursively(edges, START_EDGE, END_EDGE);
 
-    if purged_edges.len() == 0 {
+    if edges.len() == 0 {
         println!("No edges left to traverse!");
         std::process::exit(1);
     }
 
     println!("\nRemaining edges:");
-        print_edge_vector(&purged_edges); // obtain paths
+        print_edge_vector(&edges); // obtain paths
 
     let mut walked_edges = Vec::new(); // store numbers/ids of walked edges in this vector, 
 
@@ -166,7 +116,7 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
     println!("\nSearching for paths...");
     // find entry paths
     let mut initial_entries = Vec::new();
-    for edge in &purged_edges {
+    for edge in &edges {
         if edge.entry == START_EDGE { // possible starting points
             println!("We can start at {}", edge);
             initial_entries.push(edge);
@@ -200,7 +150,7 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
             let last_edge_of_subpath = subpath.last(); // get last edge of the subpath
 
             // and find new connections
-            let new_conns = get_possible_new_connections(&last_edge_of_subpath, &purged_edges);
+            let new_conns = get_possible_new_connections(&last_edge_of_subpath, &edges);
             //println!("found new connections: {}", new_conns.len());
 
             if new_conns.len() > 0 { // we have new connections
