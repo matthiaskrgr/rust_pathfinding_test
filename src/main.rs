@@ -104,9 +104,6 @@ fn print_shortest_paths(start_floor: u8, end_floor: u8, edgevec: Vec<Edge>) {
         std::process::exit(1);
     }
 
-    println!("\nRemaining edges:");
-        print_edge_vector(&edges); // obtain paths
-
     let mut walked_edges = Vec::new(); // store numbers/ids of walked edges in this vector, 
 
     let mut vector_of_paths = Vec::new(); // store paths in this vector, this will be a vector of vectors
