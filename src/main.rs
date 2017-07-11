@@ -6,7 +6,7 @@ struct Edge {
     // entry: entry point of the edge
     // exit: exit point of the edge
     // weight: edge weight
-    id: u16, 
+    id: u16,
     entry: u16,
     exit: u16,
     weight: f64,
@@ -39,7 +39,6 @@ impl Path {
     }
 }
 
-
 fn print_edge_vector(edge_vector: &Vec<Edge>) {
     // print all edge info of vector
     for edge in edge_vector {
@@ -62,81 +61,66 @@ fn verify_edges(edges: &Vec<Edge>)
 }
 
 
-
-
-
-
 fn get_possible_new_connections(edge: &Edge, purged_edges: &Vec<Edge>) -> Vec<Edge> {
     let mut connection_vec = Vec::new();
     for poss_conn in purged_edges {
         if edge.exit == (&poss_conn).entry { // collect possible new connections
-            connection_vec.push(poss_conn.clone()); 
+            connection_vec.push(poss_conn.clone());
         }
     }
 
     return connection_vec;
 }
 
-
-fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
-    verify_edges(&edgevec);
-    // meh...
+fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
+    // make sure input edges are valid
+    verify_edges(&edges);
     #[allow(non_snake_case)]
-    let  START_EDGE = start_floor;
+    let START_EDGE = start_edge;
     #[allow(non_snake_case)]
-    let  END_EDGE = end_floor; 
+    let END_EDGE = end_edge;
 
-    let tmpedgevec = edgevec.clone();
     let mut node_entries = Vec::new();
-    for node in &tmpedgevec {
+    for node in &edges {
         node_entries.push(&(node.entry));
     }
     let node_entries = node_entries; // immut
 
-
-    let edges = edgevec; // immutable now
-    println!("Current edges: ");
-        print_edge_vector(&edges); 
-
-    if edges.len() == 0 {
-        println!("No edges left to traverse!");
-        std::process::exit(1);
-    }
-
+    println!("Processing edges:");
+    print_edge_vector(&edges);
 
     let mut vector_of_paths = Vec::new(); // store paths in this vector, this will be a vector of vectors
 
-
     println!("\nSearching for paths...");
     // find entry paths
-    let mut initial_entries = Vec::new();
+    let mut starting_edges = Vec::new();
     for edge in &edges {
         if edge.entry == START_EDGE { // possible starting points
             println!("We can start at {}", edge);
-            initial_entries.push(edge);
+            starting_edges.push(edge);
         }
     }
-    let initial_entries = initial_entries; // make immutable
+    let starting_edges = starting_edges; // make immutable
 
-
+    //    ↓  these are subpaths
     // [vec1]  [vec2]  [vec3] ... ] => vector_of_paths
     //   ↓        ↓       ↓
     //  edge1   edge1   edge2
     //   ↓        ↓       ↓
-    //  edge5   edge18  edge4 
+    //  edge5   edge18  edge4
     //   ...      ...
-    for start_edge in initial_entries {
+    for start_edge in starting_edges {
         let mut path = Path { edges: Vec::new(), weight: 0.0, edge_ids: Vec::new() };
         path.append(start_edge.clone()); // start a new path_vector
         vector_of_paths.push(path.clone()); // save new path vector to VoP
     }
+    // this loops over edges and subpath until we can no longer find useful ends of paths
     'iterative_pathfinding_loop: loop {
-
         let mut vector_of_paths_tmp: Vec<Path> = Vec::new(); // vector containing path structs
         for subpath in &vector_of_paths {
             let last_edge_of_subpath = subpath.last(); // get last edge of the subpath
 
-            // and find new connections
+            // find new connections for the last edge of our current subpath
             let new_conns = get_possible_new_connections(&last_edge_of_subpath, &edges);
 
             //println!("found new connections: {}", new_conns.len());
@@ -150,7 +134,7 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
                     subpath_tmp.append(new_connection.clone()); // and append edge
                     vector_of_paths_tmp.push(subpath_tmp.clone()); // add the new subpath to the new vector
                 }
-            } else { // we have no new connections, clone subpath anyway so it doesnt get dropped
+            } else { // we have no new connections, clone subpath anyway so it doesnt get dropped since we rotate between vectors
                 vector_of_paths_tmp.push(subpath.clone());
             }
         }
@@ -164,18 +148,23 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
         for subvector in &vector_of_paths_tmp_ {
             let last_edge = subvector.last();
             let exit = last_edge.exit;
-            // if there is one path that has not reached end is not a deadend
+            // if there is one path that has not reached destination and is not a deadend
             let is_deadend = !node_entries.contains(&&exit);
-            if last_edge.exit != END_EDGE && !is_deadend {
-                // we have to continue searching
-                break_loop = false;
-            } else if last_edge.exit != END_EDGE && is_deadend { // not reached but deadend => remove deadend
-                vector_of_paths.remove(index);
+            // we have not reached our end_edge yet
+            if last_edge.exit != END_EDGE  {
+                if is_deadend { // if last node is a deadend, remove the envite subvector
+                    vector_of_paths.remove(index);
+                } else { // node is not a deadend, we have to continue searching
+                    break_loop = false;
+                }
+            } else {
+             // all subpaths found or end_node, we can break
+             // since break_loop is true already, do nothing
             }
             index += 1;
-        }  //  for subvector in &vector_of_paths_tmp_
-        if break_loop { // we are done
-            //println!("breaking search loop");
+        }
+
+        if break_loop { // are we done?
             break 'iterative_pathfinding_loop;
         }
 
@@ -185,9 +174,9 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
     println!();
     // print base vector:
     println!("Printing Vector of Paths");
-    let mut it=0;
+    let mut it = 0;
     for subpath in &vector_of_paths {
-        it +=1;
+        it += 1;
         println!("\tsubpath {} (weight: {})", it, subpath.weight);
         for edge in &subpath.edges  {
             println!("\t\t{}", edge);
@@ -196,7 +185,7 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
 
     // get shortest path
     let mut shortes_paths = Vec::new();
-    let mut index = 0; // dont add first index twice
+    let mut index = 0; // need to track index to not accidentally add VoP[0] twice
     shortes_paths.push((vector_of_paths.first().unwrap()).clone());
 
     for subpath in vector_of_paths {
@@ -242,8 +231,8 @@ fn test_matthiaskrgr() {
     let edge_13 = Edge {id: 13, entry: 48, exit: 59, weight: 1.0};
     let edge_14 = Edge {id: 14, entry: 0, exit: 100, weight: 1.0}; // 0 -> 100
     let edge_15 = Edge {id: 15, entry: 100, exit: 10, weight: 1.0}; // 100 -> 10 // goal
-    let edge_16 = Edge {id: 16, entry: 5, exit: 9, weight: 1.0}; 
-    let edge_17 = Edge {id: 17, entry: 9, exit: 200, weight: 1.0}; 
+    let edge_16 = Edge {id: 16, entry: 5, exit: 9, weight: 1.0};
+    let edge_17 = Edge {id: 17, entry: 9, exit: 200, weight: 1.0};
     let edge_18 = Edge {id: 18, entry: 200, exit: 10, weight: 1.0};
     let edge_19 = Edge {id: 19, entry: 7, exit: 5, weight: 1.0}; // 7 -> 7, 5 -> 7 circular loop
 
@@ -450,5 +439,4 @@ fn main() {
     test_prolog6();
     test_prolog7();
     test_prolog8();
-
 }
