@@ -164,9 +164,9 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
 
         // assume we are done
         let mut break_loop = true;
-        let vector_of_paths__tmp = vector_of_paths.clone(); // copy so we  can still modify the original
+        let vector_of_paths_tmp_ = vector_of_paths.clone(); // copy so we  can still modify the original
         let mut index = 0;
-        for subvector in &vector_of_paths__tmp {
+        for subvector in &vector_of_paths_tmp_ {
             let last_edge = subvector.last();
             let exit = last_edge.exit;
             // if there is one path that has not reached end is not a deadend
@@ -178,11 +178,9 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
                 vector_of_paths.remove(index);
             }
             index += 1;
-        
-        
-        } 
+        }  //  for subvector in &vector_of_paths_tmp_
         if break_loop { // we are done
-            println!("breaking search loop");
+            //println!("breaking search loop");
             break 'iterative_pathfinding_loop;
         }
 
@@ -200,15 +198,17 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
     let mut it=0;
     for subpath in &vector_of_paths {
         it +=1;
-        println!("\tsubpath {}", it);
+        println!("\tsubpath {} (weight: {})", it, subpath.weight);
         for edge in &subpath.edges  {
             println!("\t\t{}", edge);
         }
     }
-    println!("\nshortest path(s) from {} to {}:", START_EDGE, END_EDGE);
+
+    // get shortest path
     let mut shortes_paths = Vec::new();
     let mut index = 0; // dont add first index twice
     shortes_paths.push((vector_of_paths.first().unwrap()).clone());
+
     for subpath in vector_of_paths {
         if subpath.edges.len() < shortes_paths[0].edges.len() { // found smaller path
             shortes_paths.clear();
@@ -218,6 +218,9 @@ fn print_shortest_paths(start_floor: u16, end_floor: u16, edgevec: Vec<Edge>) {
         }
         index += 1;
     }
+
+    let weight = shortes_paths.last().unwrap().weight;
+    println!("\nShortest path(s) from {} to {} (weight: {}):", START_EDGE, END_EDGE, weight);
     for subpath in shortes_paths {
         for edge in subpath.edges {
             println!("{}", edge);
