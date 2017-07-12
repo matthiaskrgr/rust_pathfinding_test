@@ -193,6 +193,10 @@ fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
     // get shortest path
     let mut shortes_paths = Vec::new();
     let mut index = 0; // need to track index to not accidentally add VoP[0] twice
+    if vector_of_paths.is_empty() {
+        println!("Could not find valid path!");
+        std::process::exit(2);
+    }
     shortes_paths.push((vector_of_paths.first().unwrap()).clone());
 
     for subpath in vector_of_paths {
@@ -453,14 +457,18 @@ fn main() {
 fn test() {
 
     let start_floor: u16 = 0;
-    let end_floor: u16 = 76;
 
+    let max: u16 = 30;
+
+    let end_floor: u16 = max;
+
+    
     let mut edgevec = Vec::new();
-    for id in 0..100  { // create 200 nodes
+    for id in 0..20 { // create 200 nodes
         let mut rng = thread_rng();
 
-        let entry: u16 = rng.gen_range(0, 50);
-        let exit: u16 = rng.gen_range(0, 50);
+        let entry: u16 = rng.gen_range(0, max);
+        let exit: u16 = rng.gen_range(0, max);
         let edge = Edge { id: id, entry: entry, exit: exit, weight: 1.0};
         edgevec.push(edge.clone());
     }
