@@ -177,12 +177,13 @@ fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
 
     } // iterative_path_finding_loop
 
-
+    let mut avg_subpath_weight = 0.0;
     println!();
     // print base vector:
     println!("Printing Vector of Paths");
     let mut it = 0;
     for subpath in &vector_of_paths {
+        avg_subpath_weight += subpath.weight;
         it += 1;
         println!("\tsubpath {} (weight: {})", it, subpath.weight);
         for edge in &subpath.edges  {
@@ -197,6 +198,9 @@ fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
         println!("Could not find valid path!");
         std::process::exit(2);
     }
+    avg_subpath_weight /= vector_of_paths.len() as f64;
+    println!("average subpath weight: {}", avg_subpath_weight);
+
     shortes_paths.push((vector_of_paths.first().unwrap()).clone());
 
     for subpath in vector_of_paths {
@@ -217,6 +221,8 @@ fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
         }
         println!("====");
     }
+
+    // get avrg path weight
 }
 
 
@@ -458,13 +464,13 @@ fn test() {
 
     let start_floor: u16 = 0;
 
-    let max: u16 = 30;
+    let max: u16 = 1000;
 
-    let end_floor: u16 = max;
+    let end_floor: u16 = max-(max/4);
 
     
     let mut edgevec = Vec::new();
-    for id in 0..20 { // create 200 nodes
+    for id in 0..max*2 { // create 200 nodes
         let mut rng = thread_rng();
 
         let entry: u16 = rng.gen_range(0, max);
