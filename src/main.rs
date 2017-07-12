@@ -1,4 +1,9 @@
 use std::fmt;
+extern crate rand;
+
+
+use rand::{thread_rng, Rng};
+
 
 #[derive(Clone)] // give clone trait to this struct
 struct Edge {
@@ -151,7 +156,7 @@ fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
             let is_deadend = !node_entries.contains(&&exit);
             // we have not reached our end_edge yet
             if last_edge.exit != END_EDGE  {
-                if is_deadend { // if last node is a deadend, remove the envite subvector
+                if is_deadend { // if last node is a deadend, remove the entire subvector
                     vector_of_paths.remove(index);
                 } else { // node is not a deadend, we have to continue searching
                     break_loop = false;
@@ -438,4 +443,25 @@ fn main() {
     test_prolog6();
     test_prolog7();
     test_prolog8();
+
+    test();
+}
+
+fn test() {
+
+    let start_floor: u16 = 0;
+    let end_floor: u16 = 76;
+
+    let mut edgevec = Vec::new();
+    for id in 0..1000  { // create 200 nodes
+        let mut rng = thread_rng();
+
+        let entry: u16 = rng.gen_range(0, 200);
+        let exit: u16 = rng.gen_range(0, 200);
+        let edge = Edge { id: id, entry: entry, exit: exit, weight: 1.0};
+        edgevec.push(edge.clone());
+    }
+
+    print_shortest_paths(start_floor, end_floor, edgevec);
+
 }

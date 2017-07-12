@@ -5,6 +5,8 @@ authors = ["Matthias Krüger"]
 
 [dependencies]
 clippy = {version = "0.0.142", optional = true}
+rand = "0.3"
+
 
 [features]
 default = []
