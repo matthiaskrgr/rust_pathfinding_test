@@ -158,6 +158,9 @@ fn print_shortest_paths(start_edge: u16, end_edge: u16, edges: Vec<Edge>) {
             if last_edge.exit != END_EDGE  {
                 if is_deadend { // if last node is a deadend, remove the entire subvector
                     vector_of_paths.remove(index);
+                    // if remove several paths from a vector in one go we alter vector length so using index
+                    // might get out of bounds access !
+                    break; // prevent this
                 } else { // node is not a deadend, we have to continue searching
                     break_loop = false;
                 }
@@ -453,11 +456,11 @@ fn test() {
     let end_floor: u16 = 76;
 
     let mut edgevec = Vec::new();
-    for id in 0..1000  { // create 200 nodes
+    for id in 0..100  { // create 200 nodes
         let mut rng = thread_rng();
 
-        let entry: u16 = rng.gen_range(0, 200);
-        let exit: u16 = rng.gen_range(0, 200);
+        let entry: u16 = rng.gen_range(0, 50);
+        let exit: u16 = rng.gen_range(0, 50);
         let edge = Edge { id: id, entry: entry, exit: exit, weight: 1.0};
         edgevec.push(edge.clone());
     }
